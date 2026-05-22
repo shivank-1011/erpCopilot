@@ -53,7 +53,7 @@ ERP systems like SAP, Oracle, and Microsoft Dynamics generate enormous volumes o
 | RAG pipeline | LangChain RetrievalQA | Clean abstraction for retrieval + LLM orchestration |
 | LLM | Google Gemini 2.0 Flash | Strong reasoning, generous free tier, fast |
 | API layer | FastAPI | Async, auto-docs (Swagger), typed, production-grade |
-| Frontend | React + Vite + Vanilla CSS | Fast build, clean UI, dark mode glassmorphism design |
+| Frontend | React + Vite + Vanilla CSS | Fast build, clean UI, Neo-Brutalist design (hard shadows, stark borders) |
 
 ---
 
@@ -249,6 +249,12 @@ Gemini JSON mode test case generator producing structured positive/negative/edge
 ### Why Native Gemini SDK (not LangChain)?
 Gemini's `response_mime_type="application/json"` guarantees valid JSON output. LangChain would need string parsing. Native SDK gives more control over generation_config.
 
+### Robust JSON Extraction
+Even with `response_mime_type="application/json"`, Gemini occasionally appends markdown formatting or trailing text. We implemented robust parsing that searches the raw response for the absolute first `{` and final `}` to extract the payload, guaranteeing `json.loads()` doesn't fail with "Extra data" errors.
+
+### API Key Rotation Mechanism
+To handle Gemini's strict rate limits and quotas (429 ResourceExhausted), we built a custom `KeyManager` singleton. If a test generation request fails due to quota exhaustion, the system intercepts the exception, automatically rotates to the next available API key in an array, and seamlessly retries the generation without dropping the user's request.
+
 ### Why temperature=0.2 for test gen (not 0)?
 For test cases, slight diversity is desirable — generate different scenarios not the same 3 patterns. 0.2 adds enough variation while keeping output structured. Higher (0.7+) would produce creative but potentially unrealistic scenarios.
 
@@ -270,7 +276,7 @@ For test cases, slight diversity is desirable — generate different scenarios n
 ## 7. Phase 5 — React Frontend
 
 ### What We Built
-4-panel React dashboard: Upload → Chat → Test Gen → Source Viewer. Dark mode, glassmorphism, violet/emerald palette, JetBrains Mono for code.
+4-panel React dashboard: Upload → Chat → Test Gen → Source Viewer. **Neo-Brutalist light theme**, stark 2px dark borders, mechanical hover states, `Inter` & `JetBrains Mono` typography, and `Lucide React` icons.
 
 **Key UX decisions:**
 - Auto-refresh every 5s while documents are processing
@@ -279,6 +285,7 @@ For test cases, slight diversity is desirable — generate different scenarios n
 - Chunk selector in Test Gen with 2-line preview
 - JSON export for test cases
 - Vite proxy → no CORS issues in dev
+- **State Preservation:** Uses CSS `display: none` to toggle tabs instead of React unmounting to preserve chat history and selections without Redux.
 
 ---
 
@@ -289,6 +296,9 @@ For test cases, slight diversity is desirable — generate different scenarios n
 
 **Q25: How does the frontend communicate with FastAPI?**
 > A: Standard fetch API calls through a centralized api.js service. Vite proxies /api → http://localhost:8000 during dev, eliminating CORS entirely. For production, we'd configure CORS middleware in FastAPI. All endpoints use JSON except file upload which uses FormData.
+
+**Q25.5: How do you preserve state between different tabs (Chat, Tests, Sources) without Redux?**
+> A: Instead of conditionally unmounting React components (which destroys their local `useState` data), I used CSS `display: none;` to toggle panel visibility in `App.jsx`. This keeps the components mounted in the DOM, preserving chat history, selected documents, and generated test cases without needing a complex global state manager like Redux or Context API. It's a lightweight, pragmatic solution for an SPA dashboard.
 
 **Q26: How do you handle loading states?**
 > A: Skeleton screens for chunk loading (CSS animation placeholders). Typing indicator with pulsing dots for chat. Progress bar animation for document embedding. Inline error messages with specific text. All async operations have idle/loading/error states via React useState.
@@ -357,8 +367,8 @@ For test cases, slight diversity is desirable — generate different scenarios n
 **Q30: What is Pydantic?**
 > A: Python data validation library. We define request/response schemas as Pydantic classes. FastAPI auto-validates incoming JSON against these schemas — missing required fields return 422 automatically, never reaching business logic. Eliminates an entire class of bugs. Also serves as living documentation.
 
-**Q31: What is tenacity and why use it?**
-> A: Tenacity is a Python retry library. We use @retry(stop=stop_after_attempt(3), wait=wait_exponential(min=2, max=10)) on Gemini API calls. If Gemini returns a rate limit error (429), tenacity automatically waits 2 seconds, then 4, then 8 before retrying. This makes the app resilient to transient API failures without manual try/except retry loops.
+**Q31: How did you handle Gemini API rate limits?**
+> A: I built a custom API Key Rotation mechanism. Since the free tier of Gemini has strict quotas, my `KeyManager` singleton holds an array of valid API keys. When the SDK throws a `ResourceExhausted` (429) error, the `_call_gemini_json` wrapper catches the exception, instructs the `KeyManager` to rotate to the next key, and automatically retries the request. This provides high availability and prevents the user from experiencing a hard failure.
 
 ---
 
@@ -406,11 +416,12 @@ For test cases, slight diversity is desirable — generate different scenarios n
 | LLM | Gemini 2.0 Flash | Fast, JSON mode, 1M context |
 | Vector DB | pgvector (Supabase) | Single DB, SQL joins, free |
 | RAG framework | LangChain 0.2 | Retrieval + prompting abstraction |
-| Retry logic | tenacity | Rate limit handling |
+| Resilience | Custom API Key Rotation | Seamlessly handles 429 Quota errors |
 | PDF parsing | PyPDF2 3.0 | Simple, pure Python |
 | DOCX parsing | python-docx 1.1 | Tables + paragraphs |
 | Frontend | React 18 + Vite 5 | Components, fast HMR |
-| Styling | Vanilla CSS | Full control, no Tailwind overhead |
+| Styling | Vanilla CSS (Neo-Brutalism) | Hard drop shadows, 2px borders, tactile states |
+| Icons | Lucide React | Clean, scalable vector icons |
 | DB (relational) | SQLAlchemy 2.0 | Type-safe, async-capable |
 | Cloud DB | Supabase PostgreSQL | pgvector built-in, free tier |
 
