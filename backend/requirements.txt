@@ -1,0 +1,31 @@
+fastapi==0.111.1
+uvicorn[standard]==0.30.1
+python-multipart==0.0.9
+
+# Database
+sqlalchemy==2.0.31
+psycopg2-binary==2.9.9
+pgvector==0.3.2
+
+# LangChain + Gemini
+langchain==0.2.14
+langchain-google-genai==1.0.7
+google-generativeai==0.7.2
+langchain-community==0.2.12
+
+# Document parsing
+PyPDF2==3.0.1
+python-docx==1.1.2
+
+# Utilities
+python-dotenv==1.0.1
+pydantic==2.8.2
+pydantic-settings==2.3.4
+tenacity==8.5.0
+pandas==2.2.2
+
+# Dummy doc generation
+reportlab==4.2.2
+
+# Evaluation (Phase 6)
+ragas
