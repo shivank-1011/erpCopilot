@@ -125,7 +125,7 @@ def similarity_search(query: str, k: int = None, doc_ids: list[int] = None):
             k = k or settings.top_k_retrieval
 
             if doc_ids:
-                filter_dict = {"doc_id": {"$in": [str(d) for d in doc_ids]}}
+                filter_dict = {"doc_id": {"in": [str(d) for d in doc_ids]}}
                 results = store.similarity_search_with_score(
                     query, k=k, filter=filter_dict
                 )
@@ -159,7 +159,7 @@ def get_retriever(doc_ids: list[int] = None):
     search_kwargs = {"k": settings.top_k_retrieval}
 
     if doc_ids:
-        search_kwargs["filter"] = {"doc_id": {"$in": [str(d) for d in doc_ids]}}
+        search_kwargs["filter"] = {"doc_id": {"in": [str(d) for d in doc_ids]}}
 
     return store.as_retriever(
         search_type="similarity",
