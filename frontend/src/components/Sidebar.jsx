@@ -1,17 +1,18 @@
 import React from 'react';
+import { Folder, MessageSquare, FlaskConical, Search, Bot } from 'lucide-react';
 
 const NAV_ITEMS = [
-  { id: 'upload',    icon: '📁', label: 'Docs'  },
-  { id: 'chat',      icon: '💬', label: 'Chat'  },
-  { id: 'testgen',   icon: '🧪', label: 'Tests' },
-  { id: 'sources',   icon: '🔍', label: 'Sources' },
+  { id: 'upload',    icon: <Folder size={20} />, label: 'Docs'  },
+  { id: 'chat',      icon: <MessageSquare size={20} />, label: 'Chat'  },
+  { id: 'testgen',   icon: <FlaskConical size={20} />, label: 'Tests' },
+  { id: 'sources',   icon: <Search size={20} />, label: 'Sources' },
 ];
 
 export default function Sidebar({ activePanel, setActivePanel }) {
   return (
     <aside className="sidebar" role="navigation" aria-label="Main navigation">
       {/* Logo */}
-      <div className="sidebar-logo" title="ERP Copilot Lite">🤖</div>
+      <div className="sidebar-logo" title="ERP Copilot Lite"><Bot size={24} /></div>
       <div className="sidebar-divider" />
 
       {/* Nav items */}

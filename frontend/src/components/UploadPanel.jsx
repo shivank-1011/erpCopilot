@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { api } from '../api.js';
+import { FileText, CheckCircle, Blocks, UploadCloud, RefreshCw, Inbox, Trash2 } from 'lucide-react';
 
 function formatBytes(bytes) {
   if (!bytes) return '—';
@@ -75,12 +76,12 @@ export default function UploadPanel({ documents, setDocuments, onRefresh }) {
       {/* Stats row */}
       <div className="three-col">
         {[
-          { label: 'Documents', value: documents.length, icon: '📄' },
-          { label: 'Ready', value: documents.filter((d) => d.status === 'ready').length, icon: '✅' },
+          { label: 'Documents', value: documents.length, icon: <FileText size={24} /> },
+          { label: 'Ready', value: documents.filter((d) => d.status === 'ready').length, icon: <CheckCircle size={24} /> },
           {
             label: 'Total Chunks',
             value: documents.reduce((s, d) => s + (d.chunk_count || 0), 0),
-            icon: '🧩',
+            icon: <Blocks size={24} />,
           },
         ].map((s) => (
           <div key={s.label} className="glass-card stat-card">
@@ -126,7 +127,7 @@ export default function UploadPanel({ documents, setDocuments, onRefresh }) {
             </div>
           ) : (
             <>
-              <span className="upload-icon">📂</span>
+              <span className="upload-icon"><UploadCloud size={40} /></span>
               <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 6 }}>
                 Drop your ERP document here
               </div>
@@ -159,13 +160,13 @@ export default function UploadPanel({ documents, setDocuments, onRefresh }) {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
           <div className="section-title" style={{ marginBottom: 0 }}>Uploaded Documents</div>
           <button className="btn btn-ghost btn-sm" onClick={onRefresh} id="btn-refresh-docs">
-            🔄 Refresh
+            <RefreshCw size={14} /> Refresh
           </button>
         </div>
 
         {documents.length === 0 ? (
           <div className="empty-state" style={{ padding: '40px 0' }}>
-            <span className="empty-icon">📭</span>
+            <span className="empty-icon"><Inbox size={48} /></span>
             <div className="empty-title">No documents yet</div>
             <div className="empty-desc">Upload your first ERP document to get started</div>
           </div>
@@ -174,7 +175,7 @@ export default function UploadPanel({ documents, setDocuments, onRefresh }) {
             {documents.map((doc) => (
               <div key={doc.id} className="file-item">
                 <div className={`file-icon ${doc.file_type}`}>
-                  {doc.file_type === 'pdf' ? '📕' : '📘'}
+                  <FileText size={20} />
                 </div>
                 <div className="file-info">
                   <div className="file-name" title={doc.filename}>{doc.filename}</div>
@@ -197,7 +198,7 @@ export default function UploadPanel({ documents, setDocuments, onRefresh }) {
                     title="Delete document"
                     id={`btn-delete-doc-${doc.id}`}
                   >
-                    🗑
+                    <Trash2 size={14} />
                   </button>
                 </div>
               </div>

@@ -1,11 +1,12 @@
 import React from 'react';
+import { Search, MapPin, Lightbulb } from 'lucide-react';
 
 export default function SourceViewer({ sources }) {
   if (!sources || sources.length === 0) {
     return (
       <div className="glass-card">
         <div className="empty-state">
-          <span className="empty-icon">🔍</span>
+          <span className="empty-icon"><Search size={48} /></span>
           <div className="empty-title">No sources selected</div>
           <div className="empty-desc">
             Click a source citation in the Chat panel to view the exact document chunks
@@ -21,7 +22,7 @@ export default function SourceViewer({ sources }) {
       {/* Header */}
       <div className="glass-card" style={{ padding: '16px 20px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <span style={{ fontSize: 24 }}>🔍</span>
+          <span style={{ display: 'flex', color: 'var(--violet)' }}><Search size={24} /></span>
           <div>
             <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>
               Retrieved Source Chunks
@@ -55,8 +56,8 @@ export default function SourceViewer({ sources }) {
             </div>
 
             {/* Source label */}
-            <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 6, fontStyle: 'italic' }}>
-              📍 {src.source}
+            <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 6, fontStyle: 'italic', display: 'flex', alignItems: 'center', gap: 4 }}>
+              <MapPin size={12} /> {src.source}
             </div>
 
             {/* Chunk text */}
@@ -66,11 +67,14 @@ export default function SourceViewer({ sources }) {
       </div>
 
       {/* Footer note */}
-      <div className="alert alert-info" style={{ fontSize: 12 }}>
-        💡 <strong>How retrieval works:</strong> Your question was embedded using Gemini's
-        text-embedding-004 model, then compared against all stored chunk vectors using cosine
-        similarity search (pgvector). These are the top-{sources.length} most semantically
-        similar chunks to your question.
+      <div className="alert alert-info" style={{ fontSize: 12, display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+        <Lightbulb size={16} style={{ flexShrink: 0, marginTop: 2 }} />
+        <div>
+          <strong>How retrieval works:</strong> Your question was embedded using Gemini's
+          text-embedding-004 model, then compared against all stored chunk vectors using cosine
+          similarity search (pgvector). These are the top-{sources.length} most semantically
+          similar chunks to your question.
+        </div>
       </div>
     </div>
   );

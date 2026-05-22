@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../api.js';
+import { CheckCircle, XCircle, AlertTriangle, ChevronUp, ChevronDown, Hourglass, MousePointerClick, FlaskConical, Download, List } from 'lucide-react';
 
 function TestCaseCard({ tc, type }) {
   const [expanded, setExpanded] = useState(false);
   const typeConfig = {
-    positive: { label: 'Positive', badge: 'badge-emerald', class: 'positive', icon: '✅' },
-    negative: { label: 'Negative', badge: 'badge-red',     class: 'negative', icon: '❌' },
-    edge:     { label: 'Edge Case', badge: 'badge-amber',  class: 'edge',     icon: '⚠️' },
+    positive: { label: 'Positive', badge: 'badge-emerald', class: 'positive', icon: <CheckCircle size={18} /> },
+    negative: { label: 'Negative', badge: 'badge-red',     class: 'negative', icon: <XCircle size={18} /> },
+    edge:     { label: 'Edge Case', badge: 'badge-amber',  class: 'edge',     icon: <AlertTriangle size={18} /> },
   }[type];
 
   return (
@@ -24,7 +25,7 @@ function TestCaseCard({ tc, type }) {
             onClick={() => setExpanded(!expanded)}
             style={{ padding: '4px 8px', fontSize: 11 }}
           >
-            {expanded ? '▲' : '▼'}
+            {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
           </button>
         </div>
       </div>
@@ -157,13 +158,13 @@ export default function TestCasePanel({ documents }) {
             <option value="">Choose a document...</option>
             {readyDocs.map((d) => (
               <option key={d.id} value={d.id}>
-                {d.file_type === 'pdf' ? '📕' : '📘'} {d.filename}
+                [{d.file_type.toUpperCase()}] {d.filename}
               </option>
             ))}
           </select>
 
           {/* Chunk list */}
-          <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 8, padding: '4px' }}>
             {chunksLoading && (
               <>
                 {[1, 2, 3].map((i) => (
@@ -174,7 +175,7 @@ export default function TestCasePanel({ documents }) {
 
             {!chunksLoading && chunks.length === 0 && selectedDocId && (
               <div className="empty-state" style={{ padding: '24px 0' }}>
-                <span className="empty-icon" style={{ fontSize: 32 }}>⏳</span>
+                <span className="empty-icon"><Hourglass size={32} /></span>
                 <div className="empty-title" style={{ fontSize: 13 }}>No chunks available yet</div>
                 <div className="empty-desc" style={{ fontSize: 12 }}>Document may still be processing</div>
               </div>
@@ -182,7 +183,7 @@ export default function TestCasePanel({ documents }) {
 
             {!chunksLoading && !selectedDocId && (
               <div className="empty-state" style={{ padding: '24px 0' }}>
-                <span className="empty-icon" style={{ fontSize: 32 }}>👆</span>
+                <span className="empty-icon"><MousePointerClick size={32} /></span>
                 <div className="empty-title" style={{ fontSize: 13 }}>Select a document</div>
                 <div className="empty-desc" style={{ fontSize: 12 }}>Choose a document above to see its sections</div>
               </div>
@@ -216,7 +217,7 @@ export default function TestCasePanel({ documents }) {
               {generating ? (
                 <><span className="spinner" /> Generating...</>
               ) : (
-                <>🧪 Generate Test Cases</>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}><FlaskConical size={16} /> Generate Test Cases</div>
               )}
             </button>
             {selectedChunk && (
@@ -229,13 +230,13 @@ export default function TestCasePanel({ documents }) {
       </div>
 
       {/* Right: Test case output */}
-      <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 16 }}>
-        {error && <div className="alert alert-error">⚠️ {error}</div>}
+      <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 16, padding: '4px 8px 8px 4px' }}>
+        {error && <div className="alert alert-error" style={{ display: 'flex', alignItems: 'center', gap: 6 }}><AlertTriangle size={16} /> {error}</div>}
 
         {!testResult && !generating && (
           <div className="glass-card">
             <div className="empty-state">
-              <span className="empty-icon">🧪</span>
+              <span className="empty-icon"><FlaskConical size={48} /></span>
               <div className="empty-title">No test cases yet</div>
               <div className="empty-desc">
                 Select a document, pick a section, and click "Generate Test Cases"
@@ -273,9 +274,9 @@ export default function TestCasePanel({ documents }) {
                     <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{testResult.feature_summary}</div>
                   )}
                   <div style={{ marginTop: 10, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                    <span className="badge badge-emerald">✅ {testResult.positive_tests.length} Positive</span>
-                    <span className="badge badge-red">❌ {testResult.negative_tests.length} Negative</span>
-                    <span className="badge badge-amber">⚠️ {testResult.edge_cases.length} Edge Cases</span>
+                    <span className="badge badge-emerald" style={{ display: 'flex', alignItems: 'center', gap: 4 }}><CheckCircle size={14} /> {testResult.positive_tests.length} Positive</span>
+                    <span className="badge badge-red" style={{ display: 'flex', alignItems: 'center', gap: 4 }}><XCircle size={14} /> {testResult.negative_tests.length} Negative</span>
+                    <span className="badge badge-amber" style={{ display: 'flex', alignItems: 'center', gap: 4 }}><AlertTriangle size={14} /> {testResult.edge_cases.length} Edge Cases</span>
                     <span className="badge badge-violet">Total: {testResult.total_tests}</span>
                   </div>
                 </div>
@@ -285,7 +286,7 @@ export default function TestCasePanel({ documents }) {
                   id="btn-download-tests"
                   title="Download as JSON"
                 >
-                  ⬇ Export JSON
+                  <Download size={14} /> Export JSON
                 </button>
               </div>
             </div>
@@ -293,10 +294,10 @@ export default function TestCasePanel({ documents }) {
             {/* Tabs */}
             <div className="tabs">
               {[
-                { id: 'positive', label: '✅ Positive', count: testResult.positive_tests.length },
-                { id: 'negative', label: '❌ Negative', count: testResult.negative_tests.length },
-                { id: 'edge',     label: '⚠️ Edge Cases', count: testResult.edge_cases.length },
-                { id: 'all',      label: '📋 All',        count: testResult.total_tests },
+                { id: 'positive', label: <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><CheckCircle size={14} /> Positive</div>, count: testResult.positive_tests.length },
+                { id: 'negative', label: <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><XCircle size={14} /> Negative</div>, count: testResult.negative_tests.length },
+                { id: 'edge',     label: <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><AlertTriangle size={14} /> Edge Cases</div>, count: testResult.edge_cases.length },
+                { id: 'all',      label: <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><List size={14} /> All</div>,        count: testResult.total_tests },
               ].map((tab) => (
                 <button
                   key={tab.id}

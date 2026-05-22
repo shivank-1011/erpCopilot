@@ -5,27 +5,28 @@ import ChatPanel from './components/ChatPanel.jsx';
 import TestCasePanel from './components/TestCasePanel.jsx';
 import SourceViewer from './components/SourceViewer.jsx';
 import { api } from './api.js';
+import { Folder, MessageSquare, FlaskConical, Search } from 'lucide-react';
 
 const PAGE_CONFIG = {
   upload: {
     title: 'Document Library',
     subtitle: 'Upload and manage your ERP documents — PDF and DOCX supported',
-    icon: '📁',
+    icon: <Folder size={26} />,
   },
   chat: {
     title: 'ERP Assistant',
     subtitle: 'Ask questions about your documents — answers are grounded in your content with citations',
-    icon: '💬',
+    icon: <MessageSquare size={26} />,
   },
   testgen: {
     title: 'Test Case Generator',
     subtitle: 'Select a document section and generate structured QA test cases with Gemini AI',
-    icon: '🧪',
+    icon: <FlaskConical size={26} />,
   },
   sources: {
     title: 'Source Viewer',
     subtitle: 'Inspect the exact document chunks retrieved to generate each answer',
-    icon: '🔍',
+    icon: <Search size={26} />,
   },
 };
 
@@ -74,7 +75,7 @@ export default function App() {
         {/* Page Header */}
         <header className="page-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <span style={{ fontSize: 26 }}>{page.icon}</span>
+            <span style={{ display: 'flex', color: 'var(--violet)' }}>{page.icon}</span>
             <div>
               <h1 className="page-title">{page.title}</h1>
               <p className="page-subtitle">{page.subtitle}</p>

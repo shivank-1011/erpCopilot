@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { api } from '../api.js';
+import { Bot, User, Trash2, MessageSquare, FileText, AlertTriangle, ArrowUp } from 'lucide-react';
 
 function TypingIndicator() {
   return (
     <div className="message assistant">
-      <div className="message-avatar">🤖</div>
+      <div className="message-avatar"><Bot size={18} /></div>
       <div className="message-bubble" style={{ padding: '16px 20px' }}>
         <div style={{ display: 'flex', gap: 5, alignItems: 'center' }}>
           {[0, 1, 2].map((i) => (
@@ -74,8 +75,9 @@ export default function ChatPanel({ documents, setActiveSource }) {
         ...prev,
         {
           role:    'assistant',
-          content: '⚠️ I encountered an error processing your question. Please try again.',
+          content: 'I encountered an error processing your question. Please try again.',
           sources: [],
+          isError: true,
         },
       ]);
     } finally {
@@ -108,10 +110,10 @@ export default function ChatPanel({ documents, setActiveSource }) {
           value={filterDocId ?? ''}
           onChange={(e) => setFilterDocId(e.target.value ? Number(e.target.value) : null)}
         >
-          <option value="">🌐 Search all documents</option>
+          <option value="">All documents</option>
           {readyDocs.map((d) => (
             <option key={d.id} value={d.id}>
-              {d.file_type === 'pdf' ? '📕' : '📘'} {d.filename}
+              [{d.file_type.toUpperCase()}] {d.filename}
             </option>
           ))}
         </select>
@@ -119,7 +121,7 @@ export default function ChatPanel({ documents, setActiveSource }) {
         <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
           {messages.length > 0 && (
             <button className="btn btn-ghost btn-sm" onClick={clearChat} id="btn-clear-chat">
-              🗑 Clear
+              <Trash2 size={14} /> Clear
             </button>
           )}
         </div>
@@ -130,7 +132,7 @@ export default function ChatPanel({ documents, setActiveSource }) {
         <div className="chat-messages">
           {messages.length === 0 && (
             <div className="empty-state" style={{ flex: 1 }}>
-              <span className="empty-icon">💬</span>
+              <span className="empty-icon"><MessageSquare size={48} /></span>
               <div className="empty-title">Ask a question</div>
               <div className="empty-desc">
                 Ask anything about your uploaded ERP documents.
@@ -159,11 +161,17 @@ export default function ChatPanel({ documents, setActiveSource }) {
           {messages.map((msg, idx) => (
             <div key={idx} className={`message ${msg.role}`}>
               <div className="message-avatar">
-                {msg.role === 'user' ? '👤' : '🤖'}
+                {msg.role === 'user' ? <User size={18} /> : <Bot size={18} />}
               </div>
-              <div>
-                <div className="message-bubble">
-                  <ReactMarkdown>{msg.content}</ReactMarkdown>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: msg.role === 'user' ? 'flex-end' : 'flex-start', maxWidth: '85%' }}>
+                <div className={`message-bubble ${msg.isError ? 'error-bubble' : ''}`}>
+                  {msg.isError ? (
+                    <div style={{ display: 'flex', gap: 8, alignItems: 'center', color: 'var(--red-soft)' }}>
+                      <AlertTriangle size={16} /> {msg.content}
+                    </div>
+                  ) : (
+                    <ReactMarkdown>{msg.content}</ReactMarkdown>
+                  )}
                 </div>
                 {msg.sources && msg.sources.length > 0 && (
                   <div className="message-sources">
@@ -176,7 +184,7 @@ export default function ChatPanel({ documents, setActiveSource }) {
                         id={`source-chip-${idx}-${i}`}
                         title={src.text}
                       >
-                        📄 {src.filename} p.{src.page_num}
+                        <FileText size={12} /> {src.filename} p.{src.page_num}
                       </button>
                     ))}
                   </div>
@@ -188,8 +196,8 @@ export default function ChatPanel({ documents, setActiveSource }) {
           {loading && <TypingIndicator />}
 
           {error && (
-            <div className="alert alert-error" style={{ margin: '0 20px' }}>
-              ⚠️ {error}
+            <div className="alert alert-error" style={{ margin: '0 20px', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <AlertTriangle size={16} /> {error}
             </div>
           )}
 
@@ -221,7 +229,7 @@ export default function ChatPanel({ documents, setActiveSource }) {
             disabled={loading || !input.trim()}
             style={{ height: 44, flexShrink: 0 }}
           >
-            {loading ? <span className="spinner" style={{ color: 'white' }} /> : '↑'}
+            {loading ? <span className="spinner" style={{ color: 'white' }} /> : <ArrowUp size={18} />}
           </button>
         </div>
       </div>
