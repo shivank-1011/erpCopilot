@@ -49,10 +49,12 @@ def _call_gemini_json(system_prompt: str, user_prompt: str) -> dict:
 
             raw_text = response.text.strip()
 
-            # Extra safety: strip markdown code fences if present
-            if raw_text.startswith("```"):
-                raw_text = re.sub(r"^```(?:json)?\n?", "", raw_text)
-                raw_text = re.sub(r"\n?```$", "", raw_text)
+            # Extra safety: extract JSON object from raw_text
+            start_idx = raw_text.find('{')
+            end_idx = raw_text.rfind('}')
+            
+            if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
+                raw_text = raw_text[start_idx:end_idx+1]
 
             return json.loads(raw_text)
 
