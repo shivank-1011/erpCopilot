@@ -43,7 +43,7 @@ def _call_gemini_json(system_prompt: str, user_prompt: str) -> dict:
                 generation_config=genai.GenerationConfig(
                     response_mime_type="application/json",
                     temperature=0.2,
-                    max_output_tokens=4096,
+                    max_output_tokens=8192,
                 ),
             )
 
